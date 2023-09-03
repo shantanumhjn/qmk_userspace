@@ -1,0 +1,26 @@
+name: Build QMK firmware
+
+on: [workflow_dispatch]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 'QMK Userspace Build'
+    uses: drashna/qmk_firmware/.github/workflows/qmk_userspace_build.yml@qmk-userspace
+    with:
+      qmk_ref: ${{ github.ref_name }}
+
+  build-bjohnson:
+    name: 'QMK Firmware Build (BJohnson)'
+    uses: drashna/qmk_firmware/.github/workflows/qmk_userspace_build.yml@qmk-userspace
+    with:
+      keymap_name: bjohnson
+      qmk_ref: ${{ github.ref_name }}
+
+  publish:
+    name: 'QMK Userspace Publish'
+    uses: drashna/qmk_firmware/.github/workflows/qmk_userspace_publish.yml@qmk-userspace
+    if: always() && !cancelled()
+    needs: [build, build-bjohnson]
