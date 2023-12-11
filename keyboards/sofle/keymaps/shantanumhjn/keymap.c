@@ -279,16 +279,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define HSV_OVERRIDE(hsv, Override) HSV_OVERRIDE_HELP(hsv,Override)
 
 // Light combinations
-#define SET_INDICATORS(hsv) \
-    {0, 1, HSV_OVERRIDE_HELP(hsv, INDICATOR_BRIGHTNESS)}, \
-    {U_SPLIT_LED_COUNT+0, 1, HSV_OVERRIDE_HELP(hsv, INDICATOR_BRIGHTNESS)}
-#define SET_UNDERGLOW(hsv) \
-    {1, 6, hsv}, \
-    {U_SPLIT_LED_COUNT+1, 6,hsv}
+#define SET_INDICATORS_EXPANDED(h, s, v) \
+    {0, 1, HSV_OVERRIDE_HELP(h, s, v, INDICATOR_BRIGHTNESS)}, \
+    {U_SPLIT_LED_COUNT+0, 1, HSV_OVERRIDE_HELP(h, s, v, INDICATOR_BRIGHTNESS)}
+#define SET_INDICATORS(hsv) SET_INDICATORS_EXPANDED(hsv)
+#define SET_UNDERGLOW_EXPANDED(h, s, v) \
+    {1, 6, h, s, v}, \
+    {U_SPLIT_LED_COUNT+1, 6, h, s, v}
+#define SET_UNDERGLOW(hsv) SET_UNDERGLOW_EXPANDED(hsv)
 #define SET_NUMPAD(hsv)     \
-	{35+15, 5, hsv},\
-	  {35+22, 3, hsv},\
-	  {35+27, 3, hsv}
+    {U_SPLIT_LED_COUNT+16, 5, hsv},\
+    {U_SPLIT_LED_COUNT+23, 3, hsv},\
+    {U_SPLIT_LED_COUNT+28, 3, hsv}
 #define SET_NUMROW(hsv) \
 	{10, 2, hsv}, \
 		{20, 2, hsv}, \
@@ -299,56 +301,49 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define SET_INNER_COL(hsv)	\
     {32, 4, hsv}, \
     {U_SPLIT_LED_COUNT+32, 4, hsv}
-#define SET_OUTER_COL(hsv) \
-    {8, 4, hsv}, \
-    {U_SPLIT_LED_COUNT+8, 4, hsv}
-#define SET_THUMB_CLUSTER(hsv) 	\
-    {26, 2, hsv}, \
-    {U_SPLIT_LED_COUNT+26, 2, hsv}
+#define SET_OUTER_COL(h, s, v) \
+    {8, 4, h, s, v}, \
+    {U_SPLIT_LED_COUNT+8, 4, h, s, v}
+#define SET_THUMB_CLUSTER(h, s, v) 	\
+    {26, 2, h, s, v}, \
+    {U_SPLIT_LED_COUNT+26, 2, h, s, v}
 #define SET_LAYER_ID(hsv) 	\
-    SET_INDICATORS(hsv), \
-    SET_UNDERGLOW(hsv), \
+    SET_INDICATORS_EXPANDED(hsv), \
+    SET_UNDERGLOW_EXPANDED(hsv), \
     SET_OUTER_COL(hsv), \
     SET_THUMB_CLUSTER(hsv)
 
 // QWERTY,
 // Light on inner column and underglow
 const rgblight_segment_t PROGMEM layer_qwerty_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-  SET_LAYER_ID(HSV_RED)
-
+    SET_LAYER_ID(HSV_RED)
 );
 const rgblight_segment_t PROGMEM layer_colemakdh_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-  SET_LAYER_ID(HSV_PINK)
+    SET_LAYER_ID(HSV_PINK)
 );
 
 // _NUM,
 // Light on outer column and underglow
 const rgblight_segment_t PROGMEM layer_num_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-	SET_LAYER_ID(HSV_TEAL)
-
+    SET_LAYER_ID(HSV_TEAL)
 );
 // _SYMBOL,
 // Light on inner column and underglow
 const rgblight_segment_t PROGMEM layer_symbol_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-	SET_LAYER_ID(HSV_BLUE)
-
-    );
+    SET_LAYER_ID(HSV_BLUE)
+);
 // _COMMAND,
 // Light on inner column and underglow
 const rgblight_segment_t PROGMEM layer_command_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-  SET_LAYER_ID(HSV_PURPLE)
+    SET_LAYER_ID(HSV_PURPLE)
 );
 
 //_NUMPAD
 const rgblight_segment_t PROGMEM layer_numpad_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-	SET_INDICATORS(HSV_ORANGE),
-    SET_UNDERGLOW(HSV_ORANGE),
-	SET_NUMPAD(HSV_BLUE),
-    {7, 4, HSV_ORANGE},
-    {25, 2, HSV_ORANGE},
-    {35+6, 4, HSV_ORANGE},
-    {35+25, 2, HSV_ORANGE}
-    );
+	SET_LAYER_ID(HSV_ORANGE),
+	SET_NUMPAD(HSV_BLUE)
+);
+
 // _SWITCHER   // light up top row
 const rgblight_segment_t PROGMEM layer_switcher_lights[] = RGBLIGHT_LAYER_SEGMENTS(
 	SET_LAYER_ID(HSV_GREEN),
@@ -356,7 +351,6 @@ const rgblight_segment_t PROGMEM layer_switcher_lights[] = RGBLIGHT_LAYER_SEGMEN
 );
 
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-
     layer_qwerty_lights,
 	layer_num_lights,// overrides layer 1
 	layer_symbol_lights,
@@ -368,7 +362,7 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
 
 layer_state_t layer_state_set_user(layer_state_t state) {
 	rgblight_set_layer_state(0, layer_state_cmp(state, _DEFAULTS) && layer_state_cmp(default_layer_state,_QWERTY));
-	rgblight_set_layer_state(6, layer_state_cmp(state, _DEFAULTS) && layer_state_cmp(default_layer_state,_COLEMAKDH));
+	rgblight_set_layer_state(6, layer_state_cmp(state, _DEFAULTS) && (layer_state_cmp(default_layer_state,_COLEMAKDH) || layer_state_cmp(default_layer_state,_COLEMAK)));
 
 
 	rgblight_set_layer_state(1, layer_state_cmp(state, _LOWER));
