@@ -292,12 +292,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     {U_SPLIT_LED_COUNT+23, 3, hsv},\
     {U_SPLIT_LED_COUNT+28, 3, hsv}
 #define SET_NUMROW(hsv) \
-	{10, 2, hsv}, \
-		{20, 2, hsv}, \
-		{30, 2, hsv}, \
-	  {35+ 10, 2, hsv}, \
-	  {35+ 20, 2, hsv}, \
-	  {35+ 30, 2, hsv}
+    {11, 2, hsv}, \
+    {21, 2, hsv}, \
+    {31, 2, hsv}, \
+    {U_SPLIT_LED_COUNT+11, 2, hsv}, \
+    {U_SPLIT_LED_COUNT+21, 2, hsv}, \
+    {U_SPLIT_LED_COUNT+31, 2, hsv}
 #define SET_INNER_COL(hsv)	\
     {32, 4, hsv}, \
     {U_SPLIT_LED_COUNT+32, 4, hsv}
@@ -376,8 +376,7 @@ void keyboard_post_init_user(void) {
     // Enable the LED layers
     rgblight_layers = my_rgb_layers;
 
-	rgblight_mode(10);// haven't found a way to set this in a more useful way, breathing effect
-
+    // rgblight_mode(10);// haven't found a way to set this in a more useful way, breathing effect
 }
 #endif // RGBLIGHT_ENABLE
 
