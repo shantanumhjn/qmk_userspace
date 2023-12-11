@@ -126,3 +126,5 @@ for more options.
  // #   undef ENABLE_RGB_MATRIX_SOLID_SPLASH
  // #   undef ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
 #endif
+
+#define ENCODER_RESOLUTION 1
