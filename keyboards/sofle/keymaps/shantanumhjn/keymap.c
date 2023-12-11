@@ -20,6 +20,7 @@
 #include QMK_KEYBOARD_H
 
 #define INDICATOR_BRIGHTNESS 30
+#define U_SPLIT_LED_COUNT 36
 
 #define HSV_OVERRIDE_HELP(h, s, v, Override) h, s , Override
 #define HSV_OVERRIDE(hsv, Override) HSV_OVERRIDE_HELP(hsv,Override)
@@ -27,10 +28,10 @@
 // Light combinations
 #define SET_INDICATORS(hsv) \
 	{0, 1, HSV_OVERRIDE_HELP(hsv, INDICATOR_BRIGHTNESS)}, \
-    {35+0, 1, hsv}
+    {U_SPLIT_LED_COUNT+0, 1, hsv}
 #define SET_UNDERGLOW(hsv) \
 	{1, 6, hsv}, \
-    {35+1, 6,hsv}
+    {U_SPLIT_LED_COUNT+1, 6,hsv}
 #define SET_NUMPAD(hsv)     \
 	{35+15, 5, hsv},\
 	  {35+22, 3, hsv},\
@@ -54,13 +55,13 @@
 	  {35+ 25, 2, hsv}
 #define SET_LAYER_ID(hsv) 	\
 	{0, 1, HSV_OVERRIDE_HELP(hsv, INDICATOR_BRIGHTNESS)}, \
-    {35+0, 1, HSV_OVERRIDE_HELP(hsv, INDICATOR_BRIGHTNESS)}, \
+    {U_SPLIT_LED_COUNT+0, 1, HSV_OVERRIDE_HELP(hsv, INDICATOR_BRIGHTNESS)}, \
 		{1, 6, hsv}, \
-    {35+1, 6, hsv}, \
-		{7, 4, hsv}, \
-	  {35+ 7, 4, hsv}, \
-		{25, 2, hsv}, \
-	  {35+ 25, 2, hsv}
+    {U_SPLIT_LED_COUNT+1, 6, hsv}, \
+		{8, 4, hsv}, \
+	  {U_SPLIT_LED_COUNT+8, 4, hsv}, \
+		{26, 2, hsv}, \
+	  {U_SPLIT_LED_COUNT+26, 2, hsv}
 
 
 enum sofle_layers {
