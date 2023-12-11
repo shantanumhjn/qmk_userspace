@@ -404,10 +404,10 @@ static void print_status_narrow(void) {
 
     switch (get_highest_layer(default_layer_state)) {
         case _QWERTY:
-            oled_write_ln_P(PSTR("Qwrt"), false);
+            oled_write_ln_P(PSTR("Qwrt\n"), false);
             break;
         case _COLEMAK:
-            oled_write_ln_P(PSTR("Clmk"), false);
+            oled_write_ln_P(PSTR("Clmk\n"), false);
             break;
         case _COLEMAKDH:
             oled_write_ln_P(PSTR("CmkDH"), false);
@@ -416,7 +416,7 @@ static void print_status_narrow(void) {
         default:
             oled_write_ln_P(PSTR("Undef"), false);
     }
-    oled_write_P(PSTR("\n\n"), false);
+    oled_write_P(PSTR("\n"), false);
     // Print current layer
     oled_write_ln_P(PSTR("LAYER"), false);
     switch (get_highest_layer(layer_state)) {
@@ -448,6 +448,8 @@ static void print_status_narrow(void) {
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     if (is_keyboard_master()) {
         return OLED_ROTATION_270;
+    } else {
+        return OLED_ROTATION_180;
     }
     return rotation;
 }
