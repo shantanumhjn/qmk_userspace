@@ -129,5 +129,5 @@ for more options.
 
 #ifdef ENCODER_RESOLUTION
   #undef ENCODER_RESOLUTION
-  #define ENCODER_RESOLUTION 1
+  #define ENCODER_RESOLUTION 4
 #endif // ENCODER_RESOLUTION
