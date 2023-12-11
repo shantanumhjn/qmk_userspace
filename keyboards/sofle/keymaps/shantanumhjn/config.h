@@ -29,9 +29,9 @@ for more options.
 ///https://thomasbaart.nl/2018/12/01/reducing-firmware-size-in-qmk/
 
 
-#define MASTER_LEFT
+// #define MASTER_LEFT
 // #define MASTER_RIGHT
-// #define EE_HANDS
+#define EE_HANDS
 
 
 #define QUICK_TAP_TERM 0
