@@ -24,7 +24,7 @@ enum sofle_layers {
     _DEFAULTS = 0,
     _QWERTY = 0,
     _COLEMAK,
-	  _COLEMAKDH,
+    _COLEMAKDH,
     _LOWER,
     _RAISE,
     _ADJUST,
@@ -66,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+-------+--------+--------+--------+------|                   |--------+-------+--------+--------+--------+---------|
   KC_LSFT,  KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                      KC_H,    KC_J,   KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   //|------+-------+--------+--------+--------+------|  ===  |   |  ===  |--------+-------+--------+--------+--------+---------|
-  KC_LCTL,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B,  KC_MUTE,  KC_D_MUTE,KC_N,    KC_M,   KC_COMM, KC_DOT,  KC_SLSH, KC_LSFT,
+  KC_LCTL,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B,  KC_MUTE,   RGB_TOG, KC_N,    KC_M,   KC_COMM, KC_DOT,  KC_SLSH, KC_LSFT,
   //|------+-------+--------+--------+--------+------|  ===  |   |  ===  |--------+-------+--------+--------+--------+---------|
                  KC_BSPC, KC_LGUI, KC_LOWER, KC_SPC,  KC_ENT   ,     KC_SPC, KC_ENT ,  KC_RAISE, KC_RCTL, KC_RALT
   //            \--------+--------+--------+---------+-------|   |--------+---------+--------+---------+-------/
@@ -308,10 +308,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     {26, 2, h, s, v}, \
     {U_SPLIT_LED_COUNT+26, 2, h, s, v}
 #define SET_LAYER_ID(hsv) 	\
-    SET_INDICATORS_EXPANDED(hsv), \
-    SET_UNDERGLOW_EXPANDED(hsv), \
-    SET_OUTER_COL(hsv), \
-    SET_THUMB_CLUSTER(hsv)
+    SET_INDICATORS_EXPANDED(hsv)
+    // SET_UNDERGLOW_EXPANDED(hsv),
+    // SET_OUTER_COL(hsv),
+    // SET_THUMB_CLUSTER(hsv)
 
 // QWERTY,
 // Light on inner column and underglow
@@ -319,7 +319,7 @@ const rgblight_segment_t PROGMEM layer_qwerty_lights[] = RGBLIGHT_LAYER_SEGMENTS
     SET_LAYER_ID(HSV_RED)
 );
 const rgblight_segment_t PROGMEM layer_colemakdh_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-    SET_LAYER_ID(HSV_PINK)
+    SET_LAYER_ID(HSV_GOLD)
 );
 
 // _NUM,
@@ -346,8 +346,8 @@ const rgblight_segment_t PROGMEM layer_numpad_lights[] = RGBLIGHT_LAYER_SEGMENTS
 
 // _SWITCHER   // light up top row
 const rgblight_segment_t PROGMEM layer_switcher_lights[] = RGBLIGHT_LAYER_SEGMENTS(
-	SET_LAYER_ID(HSV_GREEN),
-	SET_NUMROW(HSV_GREEN)
+	SET_LAYER_ID(HSV_GREEN)
+	// SET_NUMROW(HSV_GREEN)
 );
 
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
@@ -521,6 +521,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 #ifdef ENCODER_ENABLE
 
+#if defined(ENCODER_MAP_ENABLE)
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+    [_QWERTY]       = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_MOD, RGB_RMOD)  },
+    [_COLEMAK]      = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_MOD, RGB_RMOD)  },
+    [_COLEMAKDH]    = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_MOD, RGB_RMOD)  },
+    [_LOWER]        = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_HUD, RGB_HUI)   },
+    [_RAISE]        = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_SPD, RGB_SPI)   },
+    [_ADJUST]       = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(KC_RIGHT, KC_LEFT)  },
+    [_NUMPAD]       = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_VAD, RGB_VAI)   },
+    [_SWITCH]       = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_SAD, RGB_SAI)   }
+};
+
+#else
+
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
         if (clockwise) {
@@ -534,17 +548,30 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             case _QWERTY:
             case _COLEMAKDH:
                 if (clockwise) {
-                    tap_code(KC_PGDN);
+                    rgblight_step();
                 } else {
-                    tap_code(KC_PGUP);
+                    rgblight_step_reverse();
                 }
                 break;
             case _RAISE:
+                if (clockwise) {
+                    rgblight_increase_val();
+                } else {
+                    rgblight_decrease_val();
+                }
+                break;
             case _LOWER:
                 if (clockwise) {
-                    tap_code(KC_DOWN);
+                    rgblight_increase_hue();
                 } else {
-                    tap_code(KC_UP);
+                    rgblight_decrease_hue();
+                }
+                break;
+            case _SWITCH:
+                if (clockwise) {
+                    rgblight_increase_sat();
+                } else {
+                    rgblight_decrease_sat();
                 }
                 break;
             default:
@@ -559,4 +586,6 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     return false;
 }
 
-#endif
+#endif // ENCODER_MAP_ENABLE
+
+#endif // ENCODER_ENABLE
