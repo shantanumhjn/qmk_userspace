@@ -5,3 +5,6 @@
 
 #pragma once
 
+// https://precondition.github.io/home-row-mods#permissive-hold
+// https://docs.qmk.fm/#/tap_hold?id=permissive-hold
+#define PERMISSIVE_HOLD
