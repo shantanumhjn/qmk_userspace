@@ -2,6 +2,6 @@
     "userspace_version": "1.0",
     "build_targets": [
         ["sofle/rev1", "shantanumhjn"],
-        ["hazel/bad_wings_pocket", "miryoku"]
+        ["bad_wings_pocket", "miryoku"]
     ]
 }
