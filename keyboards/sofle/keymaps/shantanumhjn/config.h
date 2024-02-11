@@ -131,3 +131,9 @@ for more options.
   #undef ENCODER_RESOLUTION
   #define ENCODER_RESOLUTION 4
 #endif // ENCODER_RESOLUTION
+
+
+#ifdef OLED_ENABLE
+  #define SPLIT_WPM_ENABLE
+  #define SPLIT_OLED_ENABLE
+#endif

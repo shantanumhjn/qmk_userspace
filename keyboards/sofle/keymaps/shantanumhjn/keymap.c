@@ -35,7 +35,7 @@ enum sofle_layers {
 enum custom_keycodes {
     KC_QWERTY = SAFE_RANGE,
     KC_COLEMAK,
-	  KC_COLEMAKDH,
+    KC_COLEMAKDH,
     KC_LOWER,
     KC_RAISE,
     KC_ADJUST,
@@ -380,9 +380,58 @@ void keyboard_post_init_user(void) {
 }
 #endif // RGBLIGHT_ENABLE
 
+
+
+
 #ifdef OLED_ENABLE
 
-static void render_logo(void) {
+#include "ocean_dream.c"
+#include "luna.c"
+
+//----------------------------------------------------------
+// RGB Matrix naming
+#if defined(RGB_MATRIX_ENABLE)
+
+#    if defined(RGB_MATRIX_EFFECT)
+#        undef RGB_MATRIX_EFFECT
+#    endif // defined(RGB_MATRIX_EFFECT)
+
+#    define RGB_MATRIX_EFFECT(x) RGB_MATRIX_EFFECT_##x,
+enum {
+    RGB_MATRIX_EFFECT_NONE,
+#    include "rgb_matrix_effects.inc"
+#    undef RGB_MATRIX_EFFECT
+#    ifdef RGB_MATRIX_CUSTOM_KB
+#        include "rgb_matrix_kb.inc"
+#    endif
+#    ifdef RGB_MATRIX_CUSTOM_USER
+#        include "rgb_matrix_user.inc"
+#    endif
+};
+
+#    define RGB_MATRIX_EFFECT(x)    \
+        case RGB_MATRIX_EFFECT_##x: \
+            return #x;
+char *rgb_matrix_name(uint8_t effect) {
+    switch (effect) {
+        case RGB_MATRIX_EFFECT_NONE:
+            return "NONE";
+#    include "rgb_matrix_effects.inc"
+#    undef RGB_MATRIX_EFFECT
+#    ifdef RGB_MATRIX_CUSTOM_KB
+#        include "rgb_matrix_kb.inc"
+#    endif
+#    ifdef RGB_MATRIX_CUSTOM_USER
+#        include "rgb_matrix_user.inc"
+#    endif
+        default:
+            return "UNKNOWN";
+    }
+}
+#endif // defined(RGB_MATRIX_ENABLE)
+//----------------------------------------------------------
+
+void render_logo(void) {
     static const char PROGMEM qmk_logo[] = {
         0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94,
         0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4,
@@ -392,7 +441,7 @@ static void render_logo(void) {
     oled_write_P(qmk_logo, false);
 }
 
-static void print_status_narrow(void) {
+void print_status_narrow(void) {
     // Print current mode
     oled_write_P(PSTR("\n\n"), false);
     oled_write_ln_P(PSTR("Dane\nEvans"), false);
@@ -445,20 +494,96 @@ static void print_status_narrow(void) {
     }
 }
 
+void print_status_wide(void) {
+    // Print current mode
+    oled_write_P(PSTR("Base: "), false);
+    switch (get_highest_layer(default_layer_state)) {
+        case _QWERTY:
+            oled_write_ln_P(PSTR("Qwrty"), false);
+            break;
+        case _COLEMAK:
+            oled_write_ln_P(PSTR("Colemak"), false);
+            break;
+        case _COLEMAKDH:
+            oled_write_ln_P(PSTR("CmkDH"), false);
+            break;
+
+        default:
+            oled_write_ln_P(PSTR("Undef"), false);
+    }
+
+    // Print current layer
+    oled_write_P(PSTR("LAYER: "), false);
+    switch (get_highest_layer(layer_state)) {
+        case _COLEMAK:
+        case _QWERTY:
+        case _COLEMAKDH:
+            oled_write_P(PSTR("Base"), false);
+            break;
+        case _RAISE:
+            oled_write_P(PSTR("Raise"), false);
+            break;
+        case _LOWER:
+            oled_write_P(PSTR("Lower"), false);
+            break;
+        case _ADJUST:
+            oled_write_P(PSTR("Adjust"), false);
+            break;
+        case _NUMPAD:
+            oled_write_P(PSTR("Numpad"), false);
+            break;
+        case _SWITCH:
+            oled_write_P(PSTR("Switch"), false);
+            break;
+        default:
+            oled_write_P(PSTR("Undef"), false);
+    }
+    oled_write_ln_P(PSTR(""), false);
+
+#if defined(RGB_MATRIX_ENABLE)
+    char display_str[21] = "RGB: ";
+    oled_write_ln(strcat(display_str, rgb_matrix_name(rgb_matrix_get_mode())), false);
+#endif
+}
+
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     if (is_keyboard_master()) {
         return OLED_ROTATION_270;
-    } else if (!is_keyboard_left()) {
-        return OLED_ROTATION_180;
+        // return rotation;
+    } else {
+        return OLED_ROTATION_270;
     }
     return rotation;
 }
 
+bool oled_timed_out = false;
+uint32_t anim_sleep = 0;
+
 bool oled_task_user(void) {
-    if (is_keyboard_master()) {
-        print_status_narrow();
-    } else {
-        render_logo();
+    if (timer_elapsed32(anim_sleep) > OLED_TIMEOUT && !oled_timed_out) {
+        // oled will be turned on on a keypress
+        // the timer will also be reset on a keypress
+        oled_timed_out = true;
+        oled_off();
+    }
+
+    if (oled_timed_out && is_oled_on()) {
+        // this is needed because keypress logis is missing on peripheral
+        // but the on/off state of the oled is synced between the 2 halves
+        // the oleds were switched on after timeout
+        oled_timed_out = false;
+        anim_sleep = timer_read32();
+    }
+
+    if (is_oled_on()) {
+        if (is_keyboard_left()) {
+            // print_status_narrow();
+            // print_status_wide();
+            render_luna(0, 13);
+        } else {
+            // render_logo();
+            render_stars();
+        }
     }
     return false;
 }
@@ -466,6 +591,12 @@ bool oled_task_user(void) {
 #endif
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+#ifdef OLED_ENABLE
+    oled_on();
+    anim_sleep = timer_read32();
+#endif
+
     switch (keycode) {
         case KC_QWERTY:
             if (record->event.pressed) {
