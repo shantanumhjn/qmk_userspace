@@ -9,6 +9,8 @@ ENCODER_ENABLE = yes
 OLED_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
 
+WPM_ENABLE = yes
+
 # build for arcadia
 CONVERT_TO = promicro_rp2040
 LTO_ENABLE = no
