@@ -176,9 +176,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 #endif
 
 
-
-
-
 #ifdef OLED_ENABLE
 #include "ocean_dream.c"
 #include "my_logo.c"
