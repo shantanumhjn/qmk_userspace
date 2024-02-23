@@ -10,7 +10,11 @@ OLED_ENABLE = yes
 ENCODER_MAP_ENABLE = yes
 
 WPM_ENABLE = yes
+CAPS_WORD_ENABLE = yes
+AUTO_SHIFT_ENABLE = yes
 
 # build for arcadia
 CONVERT_TO = promicro_rp2040
 LTO_ENABLE = no
+
+BOOTMAGIC_ENABLE = yes

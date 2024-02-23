@@ -39,6 +39,7 @@ for more options.
     #undef TAPPING_TERM
     #define TAPPING_TERM 200
 #endif
+#define PERMISSIVE_HOLD
 
 
 #define RGBLIGHT_SLEEP
@@ -137,3 +138,8 @@ for more options.
   #define SPLIT_WPM_ENABLE
   #define SPLIT_OLED_ENABLE
 #endif
+
+// auto shift
+#define NO_AUTO_SHIFT_ALPHA
+#define AUTO_SHIFT_TIMEOUT TAPPING_TERM
+#define AUTO_SHIFT_NO_SETUP
