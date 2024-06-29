@@ -177,8 +177,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 
 #ifdef OLED_ENABLE
-#include "ocean_dream.c"
+// #include "ocean_dream.c"
 #include "my_logo.c"
+#include "fireworks.c"
 // #include "luna.c"
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     if (is_keyboard_master()) {
@@ -217,7 +218,7 @@ bool oled_task_user(void) {
             render_my_logo();
         } else {
             // render_logo();
-            render_stars();
+            u_render_fireworks();
         }
     }
     return false;
