@@ -33,6 +33,18 @@ for more options.
 // #define MASTER_RIGHT
 #define EE_HANDS
 
+#define IOS_DEVICE_ENABLE
+
+
+#ifndef IOS_DEVICE_ENABLE
+  // USB_MAX_POWER_CONSUMPTION value for this keyboard
+  #define USB_MAX_POWER_CONSUMPTION 400
+#else
+  // fix iPhone and iPad power adapter issue
+  // iOS device need lessthan 100
+  #define USB_MAX_POWER_CONSUMPTION 100
+#endif
+
 
 #define QUICK_TAP_TERM 0
 #ifdef TAPPING_TERM
@@ -69,16 +81,26 @@ for more options.
 	#define RGBLED_SPLIT { 36, 36 } // haven't figured out how to use this yet
 
 	//#define RGBLED_NUM 30
-    #define RGBLIGHT_LIMIT_VAL 180
-    #define RGBLIGHT_HUE_STEP 10
-    #define RGBLIGHT_SAT_STEP 17
+  #ifndef IOS_DEVICE_ENABLE
+    #define RGBLIGHT_LIMIT_VAL 200
     #define RGBLIGHT_VAL_STEP 17
+  #else
+    #define RGBLIGHT_LIMIT_VAL 35
+    #define RGBLIGHT_VAL_STEP 4
+  #endif
+  #ifndef RGBLIGHT_HUE_STEP
+    #define RGBLIGHT_HUE_STEP 10
+  #endif
+  #ifndef RGBLIGHT_SAT_STEP
+    #define RGBLIGHT_SAT_STEP 17
+  #endif
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
 
-#   define RGB_MATRIX_LED_COUNT 72
-#   define RGB_MATRIX_SPLIT {36,36}
+// #   define RGB_MATRIX_LED_COUNT 72
+// #   undef  RGB_MATRIX_SPLIT
+// #   define RGB_MATRIX_SPLIT {36,36}
 #   define SPLIT_TRANSPORT_MIRROR
 
 #   define RGB_MATRIX_KEYPRESSES // reacts to keypresses
@@ -87,14 +109,22 @@ for more options.
 #   define RGB_MATRIX_FRAMEBUFFER_EFFECTS
 // #   define RGB_MATRIX_LED_PROCESS_LIMIT (RGB_MATRIX_LED_COUNT + 4) / 5 // limits the number of LEDs to process in an animation per task run (increases keyboard responsiveness)
 // #   define RGB_MATRIX_LED_FLUSH_LIMIT 16 // limits in milliseconds how frequently an animation will update the LEDs. 16 (16ms) is equivalent to limiting to 60fps (increases keyboard responsiveness)
-#    define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150 // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash.
+
+#ifndef IOS_DEVICE_ENABLE
+#   define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150 // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash.
+#   define RGB_MATRIX_VAL_STEP 8
+#else
+#    define RGB_MATRIX_MAXIMUM_BRIGHTNESS 20
+#    define RGB_MATRIX_VAL_STEP 4
+#endif
 
 // #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_GRADIENT_LEFT_RIGHT
 
-#    define RGB_MATRIX_HUE_STEP 8
-#    define RGB_MATRIX_SAT_STEP 8
-#    define RGB_MATRIX_VAL_STEP 8
-#    define RGB_MATRIX_SPD_STEP 10
+#   define RGB_MATRIX_HUE_STEP 8
+#   define RGB_MATRIX_SAT_STEP 8
+#   define RGB_MATRIX_SPD_STEP 10
+
+#   define RGB_MATRIX_DEFAULT_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS
 
 /* Disable the animations you don't want/need.  You will need to disable a good number of these    *
  * because they take up a lot of space.  Disable until you can successfully compile your firmware. */
